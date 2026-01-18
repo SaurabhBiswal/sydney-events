@@ -14,6 +14,31 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+app.use(cors());
+app.use(express.json());
+
+const connectDB = async () => {
+    try {
+        console.log('Connecting to MongoDB...');
+        const conn = await mongoose.connect(process.env.MONGODB_URI);
+        console.log(`MongoDB Connected: ${conn.connection.host}`);
+    } catch (error) {
+        console.error(`Error: ${error.message}`);
+        console.log('Check your MongoDB Atlas Network Access settings (whitelist IP).');
+    }
+};
+
+connectDB();
+
+app.use('/api/events', eventRoutes);
+app.use('/api/scrape', scraperRoutes);
+app.use('/api/chat', chatRoutes);
+app.use('/api/cleanup', cleanupRoutes);
+
+app.get('/', (req, res) => {
+    res.json({ message: 'Sydney Events API is running!' });
+});
+
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on 0.0.0.0:${PORT}`);
 });
