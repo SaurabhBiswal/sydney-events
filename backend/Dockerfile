@@ -1,13 +1,17 @@
-FROM node:18-alpine
+FROM node:22-alpine
 
-WORKDIR /app
+# Set working directory to the backend folder inside the container
+WORKDIR /app/backend
 
-COPY package*.json ./
+# Install only production dependencies
+COPY backend/package*.json ./
+RUN npm ci --only=production
 
-RUN npm install
+# Copy backend source code
+COPY backend/ .
 
-COPY . .
+# Expose the port the server listens on (5001 as used locally)
+EXPOSE 5001
 
-EXPOSE 5000
-
-CMD ["npm", "run", "dev"]
+# Start the server
+CMD ["node", "server.js"]
