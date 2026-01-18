@@ -1,10 +1,10 @@
 import React, { useContext, useState } from 'react';
-import { Calendar, MapPin, ExternalLink, Heart, Share2, Star } from 'lucide-react';
+import { Calendar, MapPin, ExternalLink, Heart, Share2, Star, MessageSquare } from 'lucide-react';
 import { format } from 'date-fns';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
 
-const EventCard = ({ event, onGetTickets }) => {
+const EventCard = ({ event, onGetTickets, onOpenReviews }) => {
     const { user, token, updateUserFavorites } = useContext(AuthContext);
 
     // Check if event is favorited
@@ -76,8 +76,8 @@ const EventCard = ({ event, onGetTickets }) => {
                                         <Star
                                             key={star}
                                             className={`h-4 w-4 ${star <= Math.round(event.averageRating)
-                                                    ? 'text-yellow-400 fill-yellow-400'
-                                                    : 'text-gray-300'
+                                                ? 'text-yellow-400 fill-yellow-400'
+                                                : 'text-gray-300'
                                                 }`}
                                         />
                                     ))}
@@ -143,6 +143,19 @@ const EventCard = ({ event, onGetTickets }) => {
                             </a>
                         </div>
                     </div>
+
+                    <button
+                        onClick={() => onOpenReviews && onOpenReviews(event)}
+                        className="flex items-center justify-center px-3 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all duration-300 font-medium text-sm group/reviews relative"
+                        title="Reviews"
+                    >
+                        <MessageSquare className="h-4 w-4" />
+                        {event.reviewCount > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
+                                {event.reviewCount}
+                            </span>
+                        )}
+                    </button>
 
                     <div className="relative group/share">
                         <button

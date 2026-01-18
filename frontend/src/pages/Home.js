@@ -3,6 +3,7 @@ import axios from 'axios';
 import { X, Loader2, Filter } from 'lucide-react';
 import EventCard from '../components/EventCard';
 import RecommendedEvents from '../components/RecommendedEvents';
+import ReviewModal from '../components/ReviewModal';
 import AuthContext from '../context/AuthContext';
 
 const API_URL = process.env.REACT_APP_API_URL
@@ -14,7 +15,9 @@ const Home = () => {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
+    const [showReviewModal, setShowReviewModal] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
+    const [reviewEvent, setReviewEvent] = useState(null);
     const [email, setEmail] = useState('');
     const [optIn, setOptIn] = useState(false);
     const [submitting, setSubmitting] = useState(false);
@@ -154,65 +157,99 @@ const Home = () => {
             ) : events.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {events.map(event => (
-                        <EventCard key={event._id || event.title} event={event} onGetTickets={handleGetTickets} />
+                        <EventCard
+                            key={event._id || event.title}
+                            event={event}
+                            onGetTickets={handleGetTickets}
+                            onOpenReviews={(event) => {
+                                setReviewEvent(event);
+                                setShowReviewModal(true);
+                            }}
+                        />
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                    <h3 className="text-lg font-medium text-gray-900">No events found matching your filters</h3>
-                    <p className="text-gray-500 mt-2">Try adjusting your category or date selection.</p>
+                <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100">
+                    <p className="text-xl text-gray-500">No events found matching your criteria</p>
+                    <button
+                        onClick={() => setFilters({ category: 'All', date: 'any', search: '' })}
+                        className="mt-4 text-primary-600 font-medium hover:text-primary-700 hover:underline"
+                    >
+                        Clear filters
+                    </button>
                 </div>
             )}
 
-            {/* Get Tickets Modal */}
-            {showModal && selectedEvent && (
-                <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-                    <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden transform transition-all scale-100">
-                        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+            {/* Ticket Modal */}
+            {showModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-fade-in">
+                        <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50">
                             <h3 className="text-xl font-bold text-gray-900">Get Tickets</h3>
-                            <button onClick={closeModal} className="text-gray-400 hover:text-gray-600">
+                            <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100">
                                 <X className="h-6 w-6" />
                             </button>
                         </div>
-                        <div className="p-6">
-                            <p className="text-gray-600 mb-6">
-                                Enter your email to proceed to <strong>{selectedEvent.title}</strong> booking page.
+                        <div className="p-8">
+                            <p className="mb-6 text-gray-600 text-center">
+                                Enter your email to receive ticket details for <br />
+                                <span className="font-bold text-gray-900 mt-1 block">{selectedEvent?.title}</span>
                             </p>
-                            <div className="space-y-4">
+                            <form onSubmit={handleSubmitEmail} className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
                                     <input
                                         type="email"
+                                        placeholder="your@email.com"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
-                                        placeholder="you@example.com"
-                                        autoFocus
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+                                        required
                                     />
                                 </div>
-                                <label className="flex items-start gap-3 cursor-pointer group">
-                                    <div className="flex items-center h-5">
-                                        <input
-                                            type="checkbox"
-                                            checked={optIn}
-                                            onChange={(e) => setOptIn(e.target.checked)}
-                                            className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-                                        />
-                                    </div>
-                                    <span className="text-sm text-gray-600 group-hover:text-gray-900">
-                                        Keep me updated about similar events in Sydney
-                                    </span>
-                                </label>
-                            </div>
-                        </div>
-                        <div className="p-6 bg-gray-50 border-t border-gray-100 flex gap-3">
-                            <button onClick={closeModal} className="flex-1 px-4 py-2 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
-                            <button onClick={handleSubmitEmail} disabled={submitting} className="flex-1 px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-70 flex justify-center items-center">
-                                {submitting ? <Loader2 className="animate-spin h-5 w-5" /> : 'Get Tickets'}
-                            </button>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        id="optIn"
+                                        checked={optIn}
+                                        onChange={(e) => setOptIn(e.target.checked)}
+                                        className="w-4 h-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
+                                    />
+                                    <label htmlFor="optIn" className="text-sm text-gray-600 cursor-pointer select-none">
+                                        Send me updates about similar events
+                                    </label>
+                                </div>
+                                <button
+                                    type="submit"
+                                    disabled={submitting}
+                                    className="w-full bg-primary-600 text-white font-bold py-3.5 rounded-xl hover:bg-primary-700 hover:shadow-lg hover:-translate-y-0.5 transition-all disabled:opacity-70 disabled:hover:transform-none disabled:cursor-not-allowed flex justify-center items-center gap-2"
+                                >
+                                    {submitting ? (
+                                        <>
+                                            <Loader2 className="animate-spin h-5 w-5" />
+                                            <span>Processing...</span>
+                                        </>
+                                    ) : (
+                                        'Confirm Subscription'
+                                    )}
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Review Modal */}
+            {showReviewModal && reviewEvent && (
+                <ReviewModal
+                    event={reviewEvent}
+                    onClose={() => {
+                        setShowReviewModal(false);
+                        setReviewEvent(null);
+                    }}
+                    onReviewSubmitted={() => {
+                        fetchEvents(); // Refresh to update average rating on card
+                    }}
+                />
             )}
         </div>
     );
