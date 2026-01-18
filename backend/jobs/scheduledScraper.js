@@ -1,6 +1,8 @@
 import cron from 'node-cron';
 import ScraperOrchestrator from '../scrapers/ScraperOrchestrator.js';
 import Event from '../models/Event.js';
+import User from '../models/User.js';
+import { sendNewEventAlert } from '../services/emailService.js';
 
 // Schedule scraper to run daily at 2:00 AM
 // CRON format: minute hour day month weekday
@@ -14,6 +16,9 @@ cron.schedule('0 2 * * *', async () => {
 
         let savedCount = 0;
 
+        // Fetch users to notify (In real app, filter for subscribed users)
+        const users = await User.find({});
+
         for (const eventData of scrapedEvents) {
             try {
                 // Check if event already exists (by title and date)
@@ -23,8 +28,13 @@ cron.schedule('0 2 * * *', async () => {
                 });
 
                 if (!existingEvent) {
-                    await Event.create(eventData);
+                    const newEvent = await Event.create(eventData);
                     savedCount++;
+
+                    // Send Email Alert
+                    if (users.length > 0) {
+                        await sendNewEventAlert(users, newEvent);
+                    }
                 }
             } catch (err) {
                 console.error(`Error saving event: ${eventData.title}`, err.message);
@@ -36,5 +46,6 @@ cron.schedule('0 2 * * *', async () => {
         console.error('❌ [CRON] Scraper failed:', error.message);
     }
 });
+
 
 console.log('⏰ Scheduled scraper initialized (runs daily at 2:00 AM)');

@@ -1,6 +1,8 @@
 import express from 'express';
 import Event from '../models/Event.js';
+import User from '../models/User.js';
 import ScraperOrchestrator from '../scrapers/ScraperOrchestrator.js';
+import { sendNewEventAlert } from '../services/emailService.js';
 
 const router = express.Router();
 
@@ -11,18 +13,24 @@ router.get('/events', async (req, res) => {
         const scrapedEvents = await orchestrator.scrapeAll();
 
         let savedCount = 0;
+        const users = await User.find({});
 
         for (const eventData of scrapedEvents) {
             try {
-               
+
                 const existingEvent = await Event.findOne({
                     title: eventData.title,
                     date: eventData.date
                 });
 
                 if (!existingEvent) {
-                    await Event.create(eventData);
+                    const newEvent = await Event.create(eventData);
                     savedCount++;
+
+                    // Send Alert
+                    if (users.length > 0) {
+                        await sendNewEventAlert(users, newEvent);
+                    }
                 }
             } catch (err) {
                 console.error(`Error saving event: ${eventData.title}`, err.message);

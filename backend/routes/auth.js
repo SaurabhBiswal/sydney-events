@@ -2,6 +2,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import { protect } from '../middleware/auth.js';
+import { sendWelcomeEmail } from '../services/emailService.js';
 
 const router = express.Router();
 
@@ -38,6 +39,13 @@ router.post('/register', async (req, res) => {
         });
 
         if (user) {
+            // Send Welcome Email
+            try {
+                await sendWelcomeEmail(user);
+            } catch (e) {
+                console.error('Failed to send welcome email', e);
+            }
+
             res.status(201).json({
                 _id: user._id,
                 name: user.name,
