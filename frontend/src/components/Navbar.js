@@ -34,7 +34,16 @@ const Navbar = () => {
 
                         {user ? (
                             <div className="flex items-center space-x-4">
-                                <span className="text-gray-900 font-medium">Hello, {user.name}</span>
+                                {/* <span className="text-gray-900 font-medium">Hello, {user.name}</span> */}
+                                {user.role === 'admin' && (
+                                    <Link to="/admin" className="text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                                        Admin
+                                    </Link>
+                                )}
+                                <Link to="/profile" className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                                    <User className="h-4 w-4" />
+                                    <span>Profile</span>
+                                </Link>
                                 <button
                                     onClick={handleLogout}
                                     className="flex items-center space-x-1 text-red-600 hover:text-red-700 font-medium transition-colors"
