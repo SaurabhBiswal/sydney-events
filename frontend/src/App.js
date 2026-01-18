@@ -7,6 +7,7 @@ import Events from './pages/Events';
 import About from './pages/About';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import AdminDashboard from './pages/AdminDashboard';
 import ChatWidget from './components/ChatWidget';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/admin" element={<AdminDashboard />} />
             </Routes>
           </main>
           <footer className="bg-white border-t mt-auto py-8 text-center text-gray-500 text-sm">

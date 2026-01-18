@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
 
-const EventCard = ({ event }) => {
+const EventCard = ({ event, onGetTickets }) => {
     const { user, token, updateUserFavorites } = useContext(AuthContext);
 
     // Check if event is favorited
@@ -87,15 +87,13 @@ const EventCard = ({ event }) => {
                 </div>
 
                 <div className="pt-4 border-t border-gray-50 mt-auto">
-                    <a
-                        href={event.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center w-full bg-gray-50 hover:bg-blue-600 text-gray-700 hover:text-white py-2.5 rounded-lg transition-all duration-300 font-medium text-sm group-hover:bg-blue-50 group-hover:text-blue-600"
+                    <button
+                        onClick={() => onGetTickets(event)}
+                        className="flex items-center justify-center w-full bg-gray-50 hover:bg-blue-600 text-gray-700 hover:text-white py-2.5 rounded-lg transition-all duration-300 font-medium text-sm group-hover:bg-blue-50 group-hover:text-blue-600 cursor-pointer"
                     >
                         <span>Get Tickets</span>
                         <ExternalLink className="h-4 w-4 ml-2" />
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>

@@ -71,3 +71,33 @@ export const sendNewEventAlert = async (users, event) => {
         return false;
     }
 };
+
+// Send Ticket Subscription Confirmation
+export const sendTicketConfirmationEmail = async (email, event) => {
+    const mailOptions = {
+        from: `"EventPulse Sydney" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: `Start Booking: ${event.title} 🎟️`,
+        html: `
+            <h2>You're one step away!</h2>
+            <p>You requested tickets for <strong>${event.title}</strong>.</p>
+            <img src="${event.imageUrl}" alt="${event.title}" style="max-width: 100%; border-radius: 8px; margin: 10px 0;" />
+            <p><strong>Date:</strong> ${new Date(event.date).toDateString()}</p>
+            <p><strong>Venue:</strong> ${event.venue}</p>
+            <p>Click the button below to complete your booking on the official site:</p>
+            <br>
+            <a href="${event.sourceUrl}" style="background-color: #2563EB; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">Proceed to Booking</a>
+            <br><br>
+            <p>Have a great time!<br>The EventPulse Team</p>
+        `
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log(`Ticket confirmation sent to ${email}`);
+        return true;
+    } catch (error) {
+        console.error('Error sending ticket confirmation:', error);
+        return false;
+    }
+};

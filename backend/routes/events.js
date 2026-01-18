@@ -2,6 +2,7 @@ import express from 'express';
 import Event from '../models/Event.js';
 import User from '../models/User.js';
 import { protect } from '../middleware/auth.js';
+import { sendTicketConfirmationEmail } from '../services/emailService.js';
 
 
 import { createClient } from 'redis';
@@ -177,8 +178,12 @@ router.post('/:id/subscribe', async (req, res) => {
             return res.status(404).json({ success: false, error: 'Event not found' });
         }
 
-
-        console.log(`User ${email} subscribed to event ${event.title}`);
+        // Send Email asynchronously
+        try {
+            await sendTicketConfirmationEmail(email, event);
+        } catch (e) {
+            console.error('Email sending failed', e);
+        }
 
         res.json({
             success: true,

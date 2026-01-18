@@ -50,6 +50,7 @@ router.post('/register', async (req, res) => {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
+                role: user.role,
                 favorites: user.favorites,
                 token: generateToken(user._id)
             });
@@ -76,6 +77,7 @@ router.post('/login', async (req, res) => {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
+                role: user.role,
                 favorites: user.favorites,
                 token: generateToken(user._id)
             });
@@ -96,6 +98,7 @@ router.get('/me', protect, async (req, res) => {
         _id: req.user._id,
         name: req.user.name,
         email: req.user.email,
+        role: req.user.role,
         favorites: req.user.favorites
     };
     res.status(200).json(user);
