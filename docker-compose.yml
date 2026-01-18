@@ -1,0 +1,28 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGODB_URI=mongodb+srv://punpunsaurabh2002_db_user:Punpun2002@job-portal-cluster.ruztisb.mongodb.net/sydney-events?retryWrites=true&w=majority
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000
+    depends_on:
+      - backend
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+# Note: We are using valid MongoDB Atlas credentials from the .env, 
+# so we don't need a local mongo container.
