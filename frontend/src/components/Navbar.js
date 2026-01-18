@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Calendar, Info, LogIn, User, LogOut } from 'lucide-react';
+import { Calendar, Info, LogIn, User, LogOut, MapPin } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
 
 const Navbar = () => {
@@ -30,6 +30,10 @@ const Navbar = () => {
                         <Link to="/about" className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 font-medium transition-colors">
                             <Info className="h-4 w-4" />
                             <span>About</span>
+                        </Link>
+                        <Link to="/map" className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                            <MapPin className="h-4 w-4" />
+                            <span>Map</span>
                         </Link>
 
                         {user ? (

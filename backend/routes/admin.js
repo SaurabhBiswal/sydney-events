@@ -3,27 +3,35 @@ import Event from '../models/Event.js';
 import User from '../models/User.js';
 import { protect } from '../middleware/auth.js';
 import { admin } from '../middleware/admin.js';
+import Review from '../models/Review.js';
 
 const router = express.Router();
 
 // Apply protection and admin check to all routes
-router.use(protect);
-router.use(admin);
+// router.use(protect); // These are now applied per route for stats
+// router.use(admin);   // These are now applied per route for stats
 
-// @desc    Get Admin Stats
+// @desc    Get system analytics
 // @route   GET /api/admin/stats
-router.get('/stats', async (req, res) => {
+// @access  Private/Admin
+router.get('/stats', protect, admin, async (req, res) => {
     try {
-        const totalEvents = await Event.countDocuments();
         const totalUsers = await User.countDocuments();
-        const activeEvents = await Event.countDocuments({ isActive: true });
+        const totalEvents = await Event.countDocuments();
+        const totalReviews = await Review.countDocuments();
+
+        // Count users who have at least one favorite event
+        const activeUsers = await User.countDocuments({
+            favorites: { $exists: true, $not: { $size: 0 } }
+        });
 
         res.json({
             success: true,
             stats: {
                 totalEvents,
                 totalUsers,
-                activeEvents
+                activeUsers,
+                totalReviews
             }
         });
     } catch (error) {

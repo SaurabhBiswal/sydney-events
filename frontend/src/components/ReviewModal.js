@@ -112,8 +112,8 @@ const ReviewModal = ({ event, onClose, onReviewSubmitted }) => {
                                             >
                                                 <Star
                                                     className={`h-8 w-8 ${star <= (hoverRating || rating)
-                                                            ? 'text-yellow-400 fill-yellow-400'
-                                                            : 'text-gray-300'
+                                                        ? 'text-yellow-400 fill-yellow-400'
+                                                        : 'text-gray-300'
                                                         }`}
                                                 />
                                             </button>
@@ -145,6 +145,7 @@ const ReviewModal = ({ event, onClose, onReviewSubmitted }) => {
                     ) : (
                         <div className="bg-gray-50 p-6 rounded-xl text-center border border-gray-200">
                             <p className="text-gray-600 mb-2">Please login to write a review</p>
+                            <a href="/login" className="text-blue-600 font-bold hover:underline">Go to Login</a>
                         </div>
                     )}
 

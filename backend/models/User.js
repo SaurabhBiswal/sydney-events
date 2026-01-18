@@ -40,6 +40,12 @@ const userSchema = new mongoose.Schema({
             type: Date,
             default: Date.now
         }
+    },
+    notificationSettings: {
+        email: { type: Boolean, default: true },
+        telegram: { type: Boolean, default: true },
+        eventReminders: { type: Boolean, default: true },
+        marketing: { type: Boolean, default: false }
     }
 }, {
     timestamps: true

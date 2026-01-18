@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Calendar, MapPin, ExternalLink, Heart, Share2, Star, MessageSquare } from 'lucide-react';
+import { Calendar, MapPin, ExternalLink, Heart, Share2, Star, MessageSquare, Bell, DollarSign } from 'lucide-react';
 import { format } from 'date-fns';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
@@ -18,27 +18,76 @@ const EventCard = ({ event, onGetTickets, onOpenReviews }) => {
 
         try {
             const API_URL = process.env.REACT_APP_API_URL
-                ? `${process.env.REACT_APP_API_URL}/api/events/${event._id}/favorite`
-                : `http://localhost:5001/api/events/${event._id}/favorite`;
+                ? `${process.env.REACT_APP_API_URL}/api`
+                : 'http://localhost:5001/api';
 
-            const res = await axios.post(API_URL, {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await axios.post(
+                `${API_URL}/events/${event._id}/favorite`,
+                {},
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
 
-            if (res.data.success) {
-                // Update local context
-                let newFavorites;
-                if (res.data.isFavorite) {
-                    newFavorites = [...(user.favorites || []), event._id];
-                } else {
-                    newFavorites = (user.favorites || []).filter(id => id !== event._id);
-                }
-                updateUserFavorites(newFavorites);
+            if (response.data.success) {
+                updateUserFavorites(response.data.data);
             }
         } catch (error) {
             console.error('Error toggling favorite:', error);
         }
     };
+
+    const handlePurchase = async () => {
+        if (!user) {
+            alert('Please login to buy tickets!');
+            return;
+        }
+
+        try {
+            const API_URL = process.env.REACT_APP_API_URL
+                ? `${process.env.REACT_APP_API_URL}/api`
+                : 'http://localhost:5001/api';
+
+            const res = await axios.post(
+                `${API_URL}/payments/create-checkout-session`,
+                { eventId: event._id },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (res.data.success && res.data.url) {
+                window.location.href = res.data.url;
+            }
+        } catch (error) {
+            console.error('Purchase error:', error);
+            alert('Failed to initiate purchase. Event might be free or sold out.');
+        }
+    };
+
+    const setReminder = async () => {
+        if (!user) {
+            alert('Please login to set reminders!');
+            return;
+        }
+
+        try {
+            const API_URL = process.env.REACT_APP_API_URL
+                ? `${process.env.REACT_APP_API_URL}/api`
+                : 'http://localhost:5001/api';
+
+            const response = await axios.post(
+                `${API_URL}/reminders`,
+                { eventId: event._id, type: '1_day_before' },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (response.data.success) {
+                alert('Reminder set successfully! You will be notified 1 day before the event.');
+            }
+        } catch (error) {
+            console.error('Error setting reminder:', error);
+            alert(error.response?.data?.message || 'Failed to set reminder.');
+        }
+    };
+
+    const isPaid = event.price && event.price !== 'Free' && event.price !== '0' && event.price !== 0;
 
     return (
         <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden border border-gray-100 flex flex-col h-full group">
@@ -155,6 +204,14 @@ const EventCard = ({ event, onGetTickets, onOpenReviews }) => {
                                 {event.reviewCount}
                             </span>
                         )}
+                    </button>
+
+                    <button
+                        onClick={setReminder}
+                        className="flex items-center justify-center px-3 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all duration-300 font-medium text-sm group/reminder"
+                        title="Set Reminder"
+                    >
+                        <Bell className="h-4 w-4" />
                     </button>
 
                     <div className="relative group/share">

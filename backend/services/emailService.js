@@ -101,3 +101,38 @@ export const sendTicketConfirmationEmail = async (email, event) => {
         return false;
     }
 };
+
+// Send Event Reminder Email
+export const sendReminderEmail = async (user, event) => {
+    const mailOptions = {
+        from: `"EventPulse Sydney" <${process.env.EMAIL_USER}>`,
+        to: user.email,
+        subject: `Reminder: ${event.title} is coming up! ⏰`,
+        html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #2563EB;">Event Reminder ⏰</h2>
+                <p>Hi ${user.name},</p>
+                <p>This is a friendly reminder that <strong>${event.title}</strong> is happening soon!</p>
+                
+                <div style="background-color: #F3F4F6; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                    <h3 style="margin-top: 0;">${event.title}</h3>
+                    <p><strong>Date:</strong> ${new Date(event.date).toLocaleDateString()}</p>
+                    <p><strong>Time:</strong> ${event.time}</p>
+                    <p><strong>Venue:</strong> ${event.venue}</p>
+                </div>
+                
+                <p>Don't forget to check your tickets!</p>
+                <p>Best regards,<br>EventPulse Sydney Team</p>
+            </div>
+        `
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log(`Reminder email sent to ${user.email}`);
+        return true;
+    } catch (error) {
+        console.error('Error sending reminder email:', error);
+        return false;
+    }
+};

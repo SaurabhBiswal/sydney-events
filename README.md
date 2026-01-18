@@ -1,227 +1,120 @@
-# 🎭 Sydney Events Intelligence Platform
+# 🎭 EventPulse Sydney - Advanced Event Intelligence Platform
 
-A Full-Stack Event Discovery Platform featuring **AI-powered recommendations** and **automated web scraping** for real-time Sydney event aggregation.
+A comprehensive, full-stack event discovery and management platform built for Sydney, Australia. It combines **real-time web scraping**, **AI-powered recommendations**, and **multi-channel notifications** to deliver a premium user experience.
 
-### 🌐 Live Demo
-- **Frontend (Live Site):** [https://lively-caramel-47082c.netlify.app/](https://lively-caramel-47082c.netlify.app/)
-- **Backend API:** [https://sydney-events-production.up.railway.app](https://sydney-events-production.up.railway.app)
-- **GitHub Repo:** [https://github.com/SaurabhBiswal/sydney-events](https://github.com/SaurabhBiswal/sydney-events)
+> **Status**: Completed (v1.0.0)
+> **Latest Deployment**: 2026
 
 ---
 
-## 🌟 Features
+## 🚀 Key Features
 
-### Core Functionality
-- 🕷️ **Real-Time Web Scraping**: Automated data extraction from Eventbrite & Time Out Sydney using Puppeteer
-- 🤖 **AI Chatbot Assistant**: Context-aware NLP chatbot for personalized event recommendations
-- 📧 **Lead Capture System**: Email opt-in modal before ticket redirection
-- 🔄 **Auto-Update Mechanism**: CRON-scheduled daily scraping (2:00 AM)
-- 🎨 **Responsive Design**: Mobile-first UI with Tailwind CSS
-- 📅 **Smart Filtering**: Automatic hiding of past events
+### 👤 Core User Experience
+- **🔐 Secure Authentication**: Full JWT-based Login/Signup system with persistent sessions.
+- **❤️ Favorites & Personalization**: Save events to your profile; get AI-curated recommendations based on your preferences.
+- **🗺️ Interactive Map View**: Visualize events across Sydney using **Leaflet Maps**.
+- **🔎 Advanced Search & Filters**: Filter by category (Music, Food, Sports, etc.), date, and keyword search with debounce.
 
-### Advanced Features
-- 🚀 **Redis Caching**: Sub-millisecond response times for frequent queries
-- 🔒 **Fault Tolerance**: Graceful degradation when scraping fails
-- 🎯 **Multi-Source Orchestration**: Aggregates data from multiple event platforms
+### 📱 Engagement & Social
+- **⭐ Ratings & Reviews**: Community-driven review system with star ratings.
+- **📅 Calendar Integration**: One-click export to **Google Calendar** or **iCal**.
+- **📢 Social Sharing**: Instant sharing to WhatsApp, Twitter/X, and Facebook.
+- **🔔 Smart Reminders**: Automated email reminders sent 1 day before saved events.
+
+### 🤖 Intelligent Automation
+- **🕷️ Real-Time Scraping**: Automated `Puppeteer` scrapers fetch fresh events from major platforms daily.
+- **🧠 AI Chatbot**: Context-aware assistant to help users find events using natural language.
+- **🤖 Telegram Bot**: Auto-broadcasts new events to a dedicated Telegram channel.
+
+### 🛠️ Admin & DevOps
+- **📊 Admin Dashboard**: Analytics, user management, and manual event CRUD.
+- **⚡ Performance**: **Redis Caching** for sub-millisecond API response times.
+- **🐳 Dockerized**: Full containerization (`docker-compose`) for consistent deployment.
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Technology Stack
 
 ### Frontend
-| Technology | Purpose | Version |
-|------------|---------|---------|
-| **React** | UI Framework | 18.2.0 |
-| **Tailwind CSS** | Styling | 3.3.5 |
-| **Axios** | HTTP Client | 1.6.0 |
-| **React Router** | Navigation | 6.18.0 |
-| **Lucide React** | Icons | 0.292.0 |
-| **date-fns** | Date Formatting | 2.30.0 |
+- **Framework**: React 18
+- **Styling**: Tailwind CSS (Custom Design System)
+- **State Management**: React Context API
+- **Mapping**: React Leaflet (OpenStreetMap)
+- **Icons**: Lucide React
 
 ### Backend
-| Technology | Purpose | Version |
-|------------|---------|---------|
-| **Node.js** | Runtime | 18+ |
-| **Express** | Web Framework | 4.18.2 |
-| **MongoDB** | Database | Atlas Cloud |
-| **Mongoose** | ODM | 7.5.0 |
-| **Puppeteer** | Headless Browser | 21.3.0 |
-| **Cheerio** | HTML Parser | 1.0.0-rc.12 |
-| **node-cron** | Task Scheduler | 3.0.3 |
-| **Redis** | Caching Layer | 5.10.0 |
+- **Runtime**: Node.js / Express
+- **Database**: MongoDB Atlas (with Mongoose ODM)
+- **Caching**: Redis (Upstash)
+- **Scraping**: Puppeteer + Cheerio
+- **Scheduling**: Node-Cron
 
-### DevOps & Tools
-- **Railway**: Backend Hosting (using Nixpacks)
-- **Netlify**: Frontend Hosting
-- **Cron-Job.org**: Automated Tasks
-- **MongoDB Atlas**: Cloud Database
-- **Git**: Version Control
+### Services & Integrations
+- **Email**: Nodemailer (SMTP)
+- **Bot**: Node-Telegram-Bot-API
+- **Payment**: (Disabled/Removed as per v1 spec)
 
 ---
 
-## 📐 System Architecture
+## 🏗️ Architecture
+
+The system follows a microservices-inspired monolithic architecture:
 
 ```
-┌─────────────────┐
-│   React SPA     │ ◄─── Tailwind CSS
-│  (Netlify)      │
-└────────┬────────┘
-         │ HTTP/REST
-         ▼
-┌─────────────────┐      ┌──────────────┐
-│  Express API    │◄────►│ Redis Cache  │
-│  (Railway)      │      │ (Port 6379)  │
-└────────┬────────┘      └──────────────┘
-         │
-         ├──► MongoDB Atlas (Events DB)
-         │
-         └──► Puppeteer Scrapers
-              ├─ Time Out Sydney
-              └─ Eventbrite (Primary)
+[React Frontend] <---> [Express API Gateway] <---> [Redis Cache]
+                             |
+                             v
+                     [MongoDB Atlas]
+                             ^
+                             |
+                   [Background Workers]
+                   (Scrapers / Cron Jobs / Telegram Bot)
 ```
 
 ---
 
-## 🚀 Quick Start (Local Development)
+## 🚀 Quick Start
 
 ### Prerequisites
 - Node.js 18+
-- MongoDB Atlas account
-- Git
+- MongoDB Connection String
+- Redis Connection String
 
-### Installation
-
-1. **Clone Repository**
-   ```bash
-   git clone https://github.com/SaurabhBiswal/sydney-events.git
-   cd sydney-events
-   ```
-
-2. **Backend Setup**
-   ```bash
-   cd backend
-   npm install
-   ```
-   
-   Create `.env`:
-   ```env
-   PORT=5001
-   MONGODB_URI=your_mongodb_connection_string
-   REDIS_URL=redis://localhost:6379
-   ```
-
-3. **Frontend Setup**
-   ```bash
-   cd frontend
-   npm install
-   ```
-
-4. **Run Development Servers**
-   ```bash
-   # Terminal 1 - Backend
-   cd backend && npm run dev
-
-   # Terminal 2 - Frontend
-   cd frontend && npm start
-   ```
-
-5. **Trigger Initial Scrape**
-   ```
-   http://localhost:5001/api/scrape/events
-   ```
-
----
-
-## 📊 API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/events` | Fetch all upcoming events |
-| `POST` | `/api/events/subscribe` | Submit email for ticket access |
-| `GET` | `/api/scrape/events` | Trigger manual scraping |
-| `POST` | `/api/chat` | AI chatbot interaction |
-
----
-
-## 🤖 AI Chatbot Features
-
-### Intent Recognition
-- **Music**: "Show me concerts", "jazz events"
-- **Food**: "restaurants", "food festivals"
-- **Sports**: "cricket", "AFL matches"
-- **General**: "what's happening this weekend"
-
-### Context Awareness
-```
-User: "food events"
-Bot: [Lists food events]
-
-User: "yes"
-Bot: [Provides booking links for previously mentioned events]
+### 1. Clone & Install
+```bash
+git clone https://github.com/SaurabhBiswal/sydney-events.git
+cd sydney-events
 ```
 
----
+### 2. Backend Setup
+```bash
+cd backend
+npm install
+# Create .env file with:
+# PORT=5001
+# MONGODB_URI=...
+# REDIS_URL=...
+# EMAIL_USER=...
+# TELEGRAM_BOT_TOKEN=...
+npm run dev
+```
 
-## 🔄 Auto-Update System (Production)
-
-### CRON Job (via Cron-Job.org)
-- **URL**: `https://sydney-events-production.up.railway.app/api/scrape/events`
-- **Schedule**: Runs daily at 2:00 AM
-- **Result**: Fetches fresh events, matches by title/date, and auto-filters past events.
-
----
-
-## 🎨 UI/UX Highlights
-
-- **Minimalist Design**: Clean, distraction-free event browsing
-- **Responsive Grid**: Adapts to mobile, tablet, desktop
-- **Floating Chat Widget**: Always accessible AI assistant
-- **Modal Interactions**: Smooth email capture flow
-- **Loading States**: Skeleton screens and spinners
-
----
-
-## 🔐 Security & Best Practices
-
-- ✅ Environment variables for sensitive data
-- ✅ CORS configuration for API security
-- ✅ Input validation on email capture
-- ✅ MongoDB injection prevention (Mongoose)
-- ✅ Rate limiting ready (Redis integration)
-
----
-
-## 🚧 Future Enhancements
-
-- [ ] User authentication (save favorite events)
-- [ ] Email notifications for new events
-- [ ] WhatsApp/Telegram bot integration
-- [ ] Advanced filters (price range, distance)
-- [ ] Calendar export (iCal format)
-- [ ] Social sharing features
-
----
-
-## 📝 License
-
-MIT License - Free for educational and commercial use
+### 3. Frontend Setup
+```bash
+cd frontend
+npm install
+# Create .env file with:
+# REACT_APP_API_URL=http://localhost:5001
+npm start
+```
 
 ---
 
 ## 👨‍💻 Developer
-
-**Saurabh**  
-Full-Stack Developer | MERN Specialist  
-[GitHub](https://github.com/SaurabhBiswal) | [LinkedIn](www.linkedin.com/in/saurabh-biswal)
+**Saurabh Biswal**
+*Full-Stack Developer*
 
 ---
 
-## 🙏 Acknowledgments
-
-- **Eventbrite & Time Out Sydney** for event data
-- **Unsplash** for placeholder images
-- **MongoDB Atlas** for cloud database hosting
-
----
-
-**Built with ❤️ by Saurabh Biswal for the Sydney community**
+## 📝 License
+MIT License

@@ -109,7 +109,7 @@ router.get('/me', protect, async (req, res) => {
 // @access  Private
 router.put('/profile', protect, async (req, res) => {
     try {
-        const { name, email } = req.body;
+        const { name, email, notificationSettings } = req.body;
         const user = await User.findById(req.user.id);
 
         if (!user) {
@@ -126,6 +126,14 @@ router.put('/profile', protect, async (req, res) => {
 
         user.name = name || user.name;
         user.email = email || user.email;
+
+        if (notificationSettings) {
+            user.notificationSettings = {
+                ...user.notificationSettings,
+                ...notificationSettings
+            };
+        }
+
         await user.save();
 
         res.json({
@@ -135,7 +143,8 @@ router.put('/profile', protect, async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                favorites: user.favorites
+                favorites: user.favorites,
+                notificationSettings: user.notificationSettings
             }
         });
     } catch (error) {

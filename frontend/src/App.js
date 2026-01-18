@@ -9,7 +9,9 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import AdminDashboard from './pages/AdminDashboard';
 import Profile from './pages/Profile';
+import MapView from './pages/MapView';
 import ChatWidget from './components/ChatWidget';
+import AdminRoute from './components/AdminRoute';
 
 function App() {
   return (
@@ -26,11 +28,19 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/map" element={<MapView />} />
+              <Route
+                path="/admin"
+                element={
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
+                }
+              />
             </Routes>
           </main>
           <footer className="bg-white border-t mt-auto py-8 text-center text-gray-500 text-sm">
-            <p>© 2024 Sydney Events. All rights reserved.</p>
+            <p>© 2026 EventPulse Sydney. All rights reserved.</p>
           </footer>
         </div>
       </Router>

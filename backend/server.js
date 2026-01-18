@@ -10,7 +10,10 @@ import scraperRoutes from './routes/scraper.js';
 import chatRoutes from './routes/chat.js';
 import cleanupRoutes from './routes/cleanup.js';
 import reviewRoutes from './routes/reviews.js';
+import reminderRoutes from './routes/reminders.js';
+import paymentRoutes from './routes/payments.js';
 import './jobs/scheduledScraper.js';
+import './jobs/reminderScheduler.js';
 import { initTelegramBot } from './services/telegramBot.js';
 
 const app = express();
@@ -40,6 +43,8 @@ app.use('/api/scraper', scraperRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/cleanup', cleanupRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/reminders', reminderRoutes);
+// app.use('/api/payments', paymentRoutes);
 
 app.get('/', (req, res) => {
     res.json({ message: 'Sydney Events API is running!' });
