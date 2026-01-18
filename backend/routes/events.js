@@ -1,0 +1,120 @@
+import express from 'express';
+import Event from '../models/Event.js';
+
+
+import { createClient } from 'redis';
+
+const redisClient = createClient({
+    url: process.env.REDIS_URL || 'redis://localhost:6379',
+    socket: {
+        reconnectStrategy: retries => {
+            if (retries > 5) {
+                console.log('Redis: Too many retries. Going silent (Cache Disabled).');
+                return new Error('Redis connection failed');
+            }
+            return Math.min(retries * 50, 500);
+        }
+    }
+});
+
+redisClient.on('error', (err) => {
+    
+    if (err.code !== 'ECONNREFUSED') console.log('Redis Client Error', err);
+});
+
+
+(async () => {
+    try {
+        await redisClient.connect();
+        console.log("Redis Connected 🚀");
+    } catch (e) {
+        console.log("⚠️ Redis not found locally. Running in 'Database Only' mode (this is normal without Docker).");
+    }
+})();
+
+const router = express.Router();
+
+// Get all events
+router.get('/', async (req, res) => {
+    try {
+        
+        const cacheKey = 'events_upcoming';
+        try {
+            const cachedData = await redisClient.get(cacheKey);
+            if (cachedData) {
+                return res.json({
+                    success: true,
+                    data: JSON.parse(cachedData),
+                    source: 'cache'
+                });
+            }
+        } catch (e) { /* ignore cache errors */ }
+
+        
+        const events = await Event.find({
+            isActive: true,
+            date: { $gte: new Date() }
+        }).sort({ date: 1 });
+
+        
+        try {
+            await redisClient.set(cacheKey, JSON.stringify(events), { EX: 3600 });
+        } catch (e) { /* ignore */ }
+
+        res.json({
+            success: true,
+            data: events,
+            source: 'database'
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+
+router.post('/sample', async (req, res) => {
+    try {
+        const sampleEvent = new Event({
+            title: 'Sample Music Concert',
+            description: 'This is a sample event for testing',
+            date: new Date('2024-03-20'),
+            time: '7:00 PM',
+            venue: 'Sydney Opera House',
+            price: '$50',
+            category: 'Music',
+            imageUrl: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d',
+            sourceUrl: 'https://www.eventbrite.com',
+            source: 'Eventbrite',
+        });
+
+        await sampleEvent.save();
+        res.json({ success: true, data: sampleEvent });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+
+router.post('/:id/subscribe', async (req, res) => {
+    try {
+        const { email } = req.body;
+        const event = await Event.findById(req.params.id);
+
+        if (!event) {
+            return res.status(404).json({ success: false, error: 'Event not found' });
+        }
+
+       
+        console.log(`User ${email} subscribed to event ${event.title}`);
+
+        res.json({
+            success: true,
+            message: 'Successfully subscribed',
+            redirectUrl: event.sourceUrl,
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+export default router;
