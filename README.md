@@ -1,9 +1,5 @@
 # 🎭 Sydney Events Intelligence Platform
 
-![MERN Stack](https://img.shields.io/badge/MERN-Stack-000000?style=for-the-badge&logo=mongodb&logoColor=green)
-![AI Powered](https://img.shields.io/badge/AI-Powered-blue?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-Production%20Ready-success?style=for-the-badge)
-
 A Full-Stack Event Discovery Platform featuring **AI-powered recommendations** and **automated web scraping** for real-time Sydney event aggregation.
 
 ---
@@ -241,7 +237,7 @@ MIT License - Free for educational and commercial use
 
 **Saurabh**  
 Full-Stack Developer | MERN Specialist  
-[GitHub](https://github.com/yourusername) | [LinkedIn](https://linkedin.com/in/yourprofile)
+[GitHub](https://github.com/SaurabhBiswal) | [LinkedIn](www.linkedin.com/in/saurabh-biswal)
 
 ---
 
