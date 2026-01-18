@@ -4,7 +4,9 @@ import { X, Loader2 } from 'lucide-react';
 import EventCard from '../components/EventCard';
 
 
-const API_URL = 'https://sydney-events-production.up.railway.app/api';
+const API_URL = process.env.REACT_APP_API_URL
+    ? `${process.env.REACT_APP_API_URL}/api`
+    : 'http://localhost:5001/api';
 
 const Home = () => {
     const [events, setEvents] = useState([]);
