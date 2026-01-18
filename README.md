@@ -82,7 +82,7 @@ The system follows a microservices-inspired monolithic architecture:
 
 ### 1. Clone & Install
 ```bash
-git clone https://github.com/SaurabhBiswal/sydney-events.git
+git clone https://github.com/SaurabhBiswal/MEGA-PROJECT-4-SYDNEY-EVENTS.git
 cd sydney-events
 ```
 
