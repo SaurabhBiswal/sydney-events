@@ -17,21 +17,22 @@ const ReviewModal = ({ event, onClose, onReviewSubmitted }) => {
     const [submitting, setSubmitting] = useState(false);
     const [hoverRating, setHoverRating] = useState(0);
 
-    useEffect(() => {
-        const fetchReviews = async () => {
-            try {
-                const res = await axios.get(`${API_URL}/reviews/${event._id}`);
-                if (res.data.success) {
-                    setReviews(res.data.data);
-                }
-            } catch (error) {
-                console.error('Error fetching reviews:', error);
-            } finally {
-                setLoading(false);
+    const fetchReviews = React.useCallback(async () => {
+        try {
+            const res = await axios.get(`${API_URL}/reviews/${event._id}`);
+            if (res.data.success) {
+                setReviews(res.data.data);
             }
-        };
-        fetchReviews();
+        } catch (error) {
+            console.error('Error fetching reviews:', error);
+        } finally {
+            setLoading(false);
+        }
     }, [event._id]);
+
+    useEffect(() => {
+        fetchReviews();
+    }, [fetchReviews]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

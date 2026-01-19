@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { User, Edit2, Save, X } from 'lucide-react';
+import { User, Edit2, Save, X, Bell } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
 import axios from 'axios';
 import { useSearchParams } from 'react-router-dom';
